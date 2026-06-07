@@ -2,6 +2,7 @@ import type { InferSelectModel } from "drizzle-orm";
 import {
   boolean,
   foreignKey,
+  integer,
   json,
   pgTable,
   primaryKey,
@@ -134,3 +135,85 @@ export const stream = pgTable(
 );
 
 export type Stream = InferSelectModel<typeof stream>;
+
+export const financeEligibilityProfile = pgTable("FinanceEligibilityProfile", {
+  userId: uuid("userId")
+    .primaryKey()
+    .notNull()
+    .references(() => user.id),
+  age: integer("age"),
+  monthlyIncomeSek: integer("monthlyIncomeSek"),
+  paymentRemarksCount: integer("paymentRemarksCount"),
+  activeKronofogdenDebt: boolean("activeKronofogdenDebt"),
+  yearsInSweden: integer("yearsInSweden"),
+  purpose: varchar("purpose", {
+    enum: [
+      "personal-loan",
+      "business-loan",
+      "investment",
+      "savings",
+      "pension",
+    ],
+  }),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+});
+
+export type FinanceEligibilityProfile = InferSelectModel<
+  typeof financeEligibilityProfile
+>;
+
+export const financeBrandRule = pgTable("FinanceBrandRule", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  brand: text("brand").notNull(),
+  category: varchar("category", {
+    enum: [
+      "loan",
+      "loan-comparison",
+      "business-loan",
+      "investment",
+      "savings",
+      "pawn",
+      "pension",
+      "currency",
+      "tool",
+    ],
+  }).notNull(),
+  representativeExampleSv: text("representativeExampleSv"),
+  requiresHighCostWarning: boolean("requiresHighCostWarning")
+    .notNull()
+    .default(false),
+  requiresInvestmentWarning: boolean("requiresInvestmentWarning")
+    .notNull()
+    .default(false),
+  requiresLysaWarning: boolean("requiresLysaWarning")
+    .notNull()
+    .default(false),
+  forbidCrypto: boolean("forbidCrypto").notNull().default(false),
+  requiredAffiliateDisclosure: boolean("requiredAffiliateDisclosure")
+    .notNull()
+    .default(true),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+});
+
+export type FinanceBrandRule = InferSelectModel<typeof financeBrandRule>;
+
+export const financeApproval = pgTable("FinanceApproval", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  brand: text("brand").notNull(),
+  approvalType: varchar("approvalType", {
+    enum: ["channel", "email", "sms", "content", "manual", "material"],
+  }).notNull(),
+  status: varchar("status", {
+    enum: ["pending", "approved", "rejected", "not-required"],
+  })
+    .notNull()
+    .default("pending"),
+  notes: text("notes"),
+  approvedBy: text("approvedBy"),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+});
+
+export type FinanceApproval = InferSelectModel<typeof financeApproval>;

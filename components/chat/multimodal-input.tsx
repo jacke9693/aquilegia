@@ -68,6 +68,18 @@ function setCookie(name: string, value: string) {
   document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}`;
 }
 
+function buildEligibilityTemplate() {
+  return [
+    "Please use this eligibility profile for Sweden finance offers:",
+    "age:",
+    "monthlyIncomeSek:",
+    "paymentRemarks: no/yes/<count>",
+    "activeKronofogdenDebt: no/yes",
+    "yearsInSweden:",
+    "purpose: personal-loan/business-loan/investment/savings/pension",
+  ].join("\n");
+}
+
 function PureMultimodalInput({
   chatId,
   input,
@@ -126,6 +138,11 @@ function PureMultimodalInput({
     "input",
     ""
   );
+  const { data: complianceSummary } = useSWR(
+    `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/compliance/summary`,
+    (url: string) => fetch(url).then((r) => r.json()),
+    { revalidateOnFocus: true, dedupingInterval: 60_000 }
+  );
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -172,6 +189,9 @@ function PureMultimodalInput({
         modelBtn?.click();
         break;
       }
+      case "eligibility-template":
+        setInput(buildEligibilityTemplate());
+        break;
       case "theme":
         setTheme(resolvedTheme === "dark" ? "light" : "dark");
         break;
@@ -417,6 +437,33 @@ function PureMultimodalInput({
           />
         )}
       </div>
+
+      {!editingMessage &&
+        complianceSummary?.eligibilityComplete === false &&
+        messages.length === 0 && (
+          <div
+            className="rounded-xl border border-amber-300/60 bg-amber-50/80 px-3 py-2 text-[12px] text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-100"
+            data-testid="eligibility-helper"
+          >
+            <div className="font-medium">Eligibility details needed</div>
+            <div className="mt-0.5">
+              {complianceSummary?.missingFieldsLabels?.sv ??
+                "Fyll i behorighetsuppgifter innan finansvarumarken visas."}
+            </div>
+            <div className="mt-2">
+              <button
+                className="rounded-md border border-amber-500/50 bg-white/60 px-2.5 py-1 text-[11px] hover:bg-white dark:bg-amber-900/20 dark:hover:bg-amber-900/40"
+                onClick={() => {
+                  setInput(buildEligibilityTemplate());
+                  textareaRef.current?.focus();
+                }}
+                type="button"
+              >
+                Insert eligibility template
+              </button>
+            </div>
+          </div>
+        )}
 
       <PromptInput
         className="[&>div]:rounded-2xl [&>div]:border [&>div]:border-border/30 [&>div]:bg-card/70 [&>div]:shadow-[var(--shadow-composer)] [&>div]:transition-shadow [&>div]:duration-300 [&>div]:focus-within:shadow-[var(--shadow-composer-focus)]"

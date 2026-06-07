@@ -6,6 +6,7 @@ import type { Vote } from "@/lib/db/schema";
 import type { ChatMessage } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useDataStream } from "./data-stream-provider";
+import { CompliancePanel } from "./compliance-panel";
 import { Greeting } from "./greeting";
 import { PreviewMessage, ThinkingMessage } from "./message";
 
@@ -49,15 +50,16 @@ function PureMessages({
     status,
   });
 
-  useDataStream();
+  const { complianceCards, setComplianceCards } = useDataStream();
 
   const prevChatIdRef = useRef(chatId);
   useEffect(() => {
     if (prevChatIdRef.current !== chatId) {
       prevChatIdRef.current = chatId;
       reset();
+      setComplianceCards([]);
     }
-  }, [chatId, reset]);
+  }, [chatId, reset, setComplianceCards]);
 
   return (
     <div className="relative flex-1 bg-background">
@@ -75,6 +77,11 @@ function PureMessages({
         style={isArtifactVisible ? { scrollbarWidth: "none" } : undefined}
       >
         <div className="mx-auto flex min-h-full min-w-0 max-w-4xl flex-col gap-5 px-2 py-6 md:gap-7 md:px-4">
+          <CompliancePanel
+            cards={complianceCards}
+            onClear={() => setComplianceCards([])}
+          />
+
           {messages.map((message, index) => (
             <PreviewMessage
               addToolApprovalResponse={addToolApprovalResponse}

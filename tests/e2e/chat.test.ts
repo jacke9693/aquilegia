@@ -24,6 +24,18 @@ test.describe("Chat Page", () => {
     await expect(suggestions).toBeVisible();
   });
 
+  test("finance eligibility suggested action is visible", async ({ page }) => {
+    await page.goto("/");
+    await expect(
+      page.getByText(/behorighetsuppgifter steg for steg/i)
+    ).toBeVisible();
+  });
+
+  test("eligibility helper card is visible", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByTestId("eligibility-helper")).toBeVisible();
+  });
+
   test("can stop generation with stop button", async ({ page }) => {
     await page.goto("/");
 
@@ -57,5 +69,17 @@ test.describe("Chat Input Features", () => {
     const input = page.getByTestId("multimodal-input");
     await input.fill("Line 1\nLine 2\nLine 3");
     await expect(input).toContainText("Line 1");
+  });
+
+  test("eligibility slash command inserts template", async ({ page }) => {
+    await page.goto("/");
+
+    const input = page.getByTestId("multimodal-input");
+    await input.fill("/eligibility");
+    await input.press("Enter");
+
+    await expect(input).toContainText("Please use this eligibility profile");
+    await expect(input).toContainText("monthlyIncomeSek:");
+    await expect(input).toContainText("activeKronofogdenDebt:");
   });
 });

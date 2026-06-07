@@ -23,17 +23,20 @@ import { getLanguageModel } from "@/lib/ai/providers";
 import { createDocument } from "@/lib/ai/tools/create-document";
 import { editDocument } from "@/lib/ai/tools/edit-document";
 import { getWeather } from "@/lib/ai/tools/get-weather";
+import { recommendFinanceBrand } from "@/lib/ai/tools/recommend-finance-brand";
 import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
 import { updateDocument } from "@/lib/ai/tools/update-document";
 import { isProductionEnvironment } from "@/lib/constants";
 import {
   createStreamId,
   deleteChatById,
+  getFinanceEligibilityProfileByUserId,
   getChatById,
   getMessageCountByUserId,
   getMessagesByChatId,
   saveChat,
   saveMessages,
+  upsertFinanceEligibilityProfile,
   updateChatTitleById,
   updateMessage,
 } from "@/lib/db/queries";
@@ -42,6 +45,14 @@ import { ChatbotError } from "@/lib/errors";
 import { checkIpRateLimit } from "@/lib/ratelimit";
 import type { ChatMessage } from "@/lib/types";
 import { convertToUIMessages, generateUUID } from "@/lib/utils";
+import {
+  extractTextFromMessageParts,
+  enforceFinanceComplianceOnAssistantParts,
+  formatMissingEligibilityFields,
+  missingEligibilityFields,
+  parseEligibilityProfileFromText,
+} from "@/lib/compliance/rules";
+import { detectMentionedFinanceBrands } from "@/lib/compliance/brands";
 import { generateTitleFromUserMessage } from "../../actions";
 import { type PostRequestBody, postRequestBodySchema } from "./schema";
 
@@ -166,6 +177,39 @@ export async function POST(request: Request) {
     };
 
     if (message?.role === "user") {
+      const userText = extractTextFromMessageParts(message.parts);
+      if (userText) {
+        const parsedProfile = parseEligibilityProfileFromText(userText);
+        const shouldUpsert =
+          typeof parsedProfile.age === "number" ||
+          typeof parsedProfile.monthlyIncomeSek === "number" ||
+          typeof parsedProfile.activeKronofogdenDebt === "boolean" ||
+          typeof parsedProfile.yearsInSweden === "number" ||
+          typeof parsedProfile.purpose === "string" ||
+          parsedProfile.paymentRemarks === "no" ||
+          parsedProfile.paymentRemarks === "yes" ||
+          typeof parsedProfile.paymentRemarks === "number";
+
+        if (shouldUpsert) {
+          await upsertFinanceEligibilityProfile({
+            userId: session.user.id,
+            age: parsedProfile.age,
+            monthlyIncomeSek: parsedProfile.monthlyIncomeSek,
+            activeKronofogdenDebt: parsedProfile.activeKronofogdenDebt,
+            yearsInSweden: parsedProfile.yearsInSweden,
+            purpose: parsedProfile.purpose,
+            paymentRemarksCount:
+              typeof parsedProfile.paymentRemarks === "number"
+                ? parsedProfile.paymentRemarks
+                : parsedProfile.paymentRemarks === "no"
+                  ? 0
+                  : parsedProfile.paymentRemarks === "yes"
+                    ? 1
+                    : undefined,
+          });
+        }
+      }
+
       await saveMessages({
         messages: [
           {
@@ -185,15 +229,90 @@ export async function POST(request: Request) {
     const capabilities = modelCapabilities[chatModel];
     const isReasoningModel = capabilities?.reasoning === true;
     const supportsTools = capabilities?.tools === true;
+    const storedEligibilityProfile = await getFinanceEligibilityProfileByUserId({
+      userId: session.user.id,
+    });
+
+    const profileContextText = storedEligibilityProfile
+      ? [
+          `age: ${storedEligibilityProfile.age ?? "unknown"}`,
+          `monthlyIncomeSek: ${storedEligibilityProfile.monthlyIncomeSek ?? "unknown"}`,
+          `paymentRemarks: ${storedEligibilityProfile.paymentRemarksCount ?? "unknown"}`,
+          `activeKronofogdenDebt: ${
+            typeof storedEligibilityProfile.activeKronofogdenDebt === "boolean"
+              ? storedEligibilityProfile.activeKronofogdenDebt
+              : "unknown"
+          }`,
+          `yearsInSweden: ${storedEligibilityProfile.yearsInSweden ?? "unknown"}`,
+          `purpose: ${storedEligibilityProfile.purpose ?? "unknown"}`,
+        ].join("\n")
+      : "";
 
     const modelMessages = await convertToModelMessages(uiMessages);
 
     const stream = createUIMessageStream({
       originalMessages: isToolApprovalFlow ? uiMessages : undefined,
       execute: async ({ writer: dataStream }) => {
+        const latestUserText = message?.role === "user" ? extractTextFromMessageParts(message.parts) : "";
+        const mentionedBrands = latestUserText
+          ? detectMentionedFinanceBrands(latestUserText)
+          : [];
+
+        if (mentionedBrands.length > 0) {
+          const parsedProfile = parseEligibilityProfileFromText(latestUserText);
+
+          const mergedProfile = {
+            age: parsedProfile.age ?? storedEligibilityProfile?.age ?? undefined,
+            monthlyIncomeSek:
+              parsedProfile.monthlyIncomeSek ??
+              storedEligibilityProfile?.monthlyIncomeSek ??
+              undefined,
+            paymentRemarks:
+              typeof parsedProfile.paymentRemarks === "number"
+                ? parsedProfile.paymentRemarks
+                : parsedProfile.paymentRemarks === "no"
+                  ? 0
+                  : parsedProfile.paymentRemarks === "yes"
+                    ? 1
+                    : typeof storedEligibilityProfile?.paymentRemarksCount === "number"
+                      ? storedEligibilityProfile.paymentRemarksCount
+                      : undefined,
+            activeKronofogdenDebt:
+              typeof parsedProfile.activeKronofogdenDebt === "boolean"
+                ? parsedProfile.activeKronofogdenDebt
+                : storedEligibilityProfile?.activeKronofogdenDebt ?? undefined,
+            yearsInSweden:
+              parsedProfile.yearsInSweden ??
+              storedEligibilityProfile?.yearsInSweden ??
+              undefined,
+            purpose: parsedProfile.purpose ?? storedEligibilityProfile?.purpose ?? undefined,
+          };
+
+          const missingFields = missingEligibilityFields(mergedProfile);
+          if (missingFields.length > 0) {
+            const labels = formatMissingEligibilityFields(missingFields);
+            dataStream.write({
+              type: "data-complianceCard",
+              data: {
+                titleSv: "Behorighetsuppgifter kravs",
+                titleEn: "Eligibility details required",
+                bodySv: `Fyll i innan varumarkeserbjudanden visas: ${labels.sv}`,
+                bodyEn: `Provide before brand offers can be shown: ${labels.en}`,
+                kind: "eligibility",
+                brand: mentionedBrands[0]?.brand,
+              },
+              transient: true,
+            });
+          }
+        }
+
         const result = streamText({
           model: getLanguageModel(chatModel),
-          system: systemPrompt({ requestHints, supportsTools }),
+          system: systemPrompt({
+            requestHints,
+            supportsTools,
+            complianceContext: profileContextText || undefined,
+          }),
           messages: modelMessages,
           stopWhen: stepCountIs(5),
           experimental_activeTools:
@@ -205,6 +324,7 @@ export async function POST(request: Request) {
                   "editDocument",
                   "updateDocument",
                   "requestSuggestions",
+                  "recommendFinanceBrand",
                 ],
           providerOptions: {
             ...(modelConfig?.gatewayOrder && {
@@ -216,6 +336,7 @@ export async function POST(request: Request) {
           },
           tools: {
             getWeather,
+            recommendFinanceBrand,
             createDocument: createDocument({
               session,
               dataStream,
@@ -255,13 +376,30 @@ export async function POST(request: Request) {
       },
       generateId: generateUUID,
       onFinish: async ({ messages: finishedMessages }) => {
+        const userConversationText = uiMessages
+          .filter((item) => item.role === "user")
+          .map((item) => extractTextFromMessageParts(item.parts))
+          .filter(Boolean)
+          .join("\n");
+        const complianceContext = profileContextText
+          ? `${profileContextText}\n${userConversationText}`
+          : userConversationText;
+
         if (isToolApprovalFlow) {
           for (const finishedMsg of finishedMessages) {
             const existingMsg = uiMessages.find((m) => m.id === finishedMsg.id);
+            const compliantParts =
+              finishedMsg.role === "assistant"
+                ? enforceFinanceComplianceOnAssistantParts(
+                    finishedMsg.parts,
+                    complianceContext
+                  )
+                : finishedMsg.parts;
+
             if (existingMsg) {
               await updateMessage({
                 id: finishedMsg.id,
-                parts: finishedMsg.parts,
+                parts: compliantParts,
               });
             } else {
               await saveMessages({
@@ -269,7 +407,7 @@ export async function POST(request: Request) {
                   {
                     id: finishedMsg.id,
                     role: finishedMsg.role,
-                    parts: finishedMsg.parts,
+                    parts: compliantParts,
                     createdAt: new Date(),
                     attachments: [],
                     chatId: id,
@@ -283,7 +421,13 @@ export async function POST(request: Request) {
             messages: finishedMessages.map((currentMessage) => ({
               id: currentMessage.id,
               role: currentMessage.role,
-              parts: currentMessage.parts,
+              parts:
+                currentMessage.role === "assistant"
+                  ? enforceFinanceComplianceOnAssistantParts(
+                      currentMessage.parts,
+                      complianceContext
+                    )
+                  : currentMessage.parts,
               createdAt: new Date(),
               attachments: [],
               chatId: id,

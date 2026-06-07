@@ -7,9 +7,29 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://chat.vercel.ai"),
-  title: "Next.js Chatbot Template",
-  description: "Next.js chatbot template using the AI SDK.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL ?? "https://localhost:3000"
+  ),
+  title: {
+    default: "Finansassistenten — Hitta rätt lån & investering i Sverige",
+    template: "%s | Finansassistenten",
+  },
+  description:
+    "AI-driven finansrådgivningstjänst för Sverige. Jämför privatlan, foretagslan, investeringar och sparkonton — med inbyggd compliance och fullständiga disclosures.",
+  keywords: [
+    "privatlan",
+    "foretagslan",
+    "investering",
+    "sparkonto",
+    "affiliate",
+    "Sverige",
+    "finans",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "sv_SE",
+    siteName: "Finansassistenten",
+  },
 };
 
 export const viewport = {

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  CircleHelpIcon,
   BombIcon,
   ListIcon,
   PaletteIcon,
@@ -44,6 +45,12 @@ export const slashCommands: SlashCommand[] = [
     description: "Change the AI model",
     icon: <ListIcon className="size-3.5" />,
     action: "model",
+  },
+  {
+    name: "eligibility",
+    description: "Insert finance eligibility template",
+    icon: <CircleHelpIcon className="size-3.5" />,
+    action: "eligibility-template",
   },
   {
     name: "theme",

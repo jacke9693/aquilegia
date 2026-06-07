@@ -13,6 +13,7 @@ import {
   ToolOutput,
 } from "../ai-elements/tool";
 import { useDataStream } from "./data-stream-provider";
+import { AffiliateBrandCard } from "./affiliate-card";
 import { DocumentToolResult } from "./document";
 import { DocumentPreview } from "./document-preview";
 import { SparklesIcon } from "./icons";
@@ -20,6 +21,7 @@ import { MessageActions } from "./message-actions";
 import { MessageReasoning } from "./message-reasoning";
 import { PreviewAttachment } from "./preview-attachment";
 import { Weather } from "./weather";
+import type { FinanceBrandRule } from "@/lib/compliance/brands";
 
 const PurePreviewMessage = ({
   addToolApprovalResponse,
@@ -114,6 +116,26 @@ const PurePreviewMessage = ({
     }
 
     if (type === "text") {
+      const text = sanitizeText(part.text);
+      const isComplianceNotice =
+        text.includes("Svarsutkastet stoppades av compliance-regler") ||
+        text.includes("draft response was blocked by compliance rules");
+
+      if (isComplianceNotice) {
+        return (
+          <div
+            className="w-full max-w-[min(100%,56ch)] rounded-xl border border-amber-300/60 bg-amber-50/80 p-3 text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/40 dark:text-amber-100"
+            data-testid="compliance-notice"
+            key={key}
+          >
+            <div className="mb-1 font-medium text-[12px] tracking-wide uppercase">
+              Compliance Notice
+            </div>
+            <MessageResponse>{text}</MessageResponse>
+          </div>
+        );
+      }
+
       return (
         <MessageContent
           className={cn("text-[13px] leading-[1.65]", {
@@ -123,7 +145,7 @@ const PurePreviewMessage = ({
           data-testid="message-content"
           key={key}
         >
-          <MessageResponse>{sanitizeText(part.text)}</MessageResponse>
+          <MessageResponse>{text}</MessageResponse>
         </MessageContent>
       );
     }
@@ -296,6 +318,43 @@ const PurePreviewMessage = ({
                 }
               />
             )}
+          </ToolContent>
+        </Tool>
+      );
+    }
+
+    if (type === "tool-recommendFinanceBrand") {
+      const { toolCallId, state } = part;
+
+      if (state === "output-available") {
+        if ("error" in part.output) {
+          return (
+            <div
+              className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-500 dark:bg-red-950/50"
+              key={toolCallId}
+            >
+              {String(part.output.error)}
+            </div>
+          );
+        }
+        return (
+          <AffiliateBrandCard
+            brand={part.output as FinanceBrandRule}
+            className="w-[min(100%,420px)]"
+            key={toolCallId}
+          />
+        );
+      }
+
+      return (
+        <Tool
+          className="w-[min(100%,450px)]"
+          defaultOpen={true}
+          key={toolCallId}
+        >
+          <ToolHeader state={state} type="tool-recommendFinanceBrand" />
+          <ToolContent>
+            {state === "input-available" && <ToolInput input={part.input} />}
           </ToolContent>
         </Tool>
       );

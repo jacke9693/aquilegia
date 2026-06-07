@@ -2,6 +2,7 @@ import { smoothStream, streamText } from "ai";
 import { updateDocumentPrompt } from "@/lib/ai/prompts";
 import { getLanguageModel } from "@/lib/ai/providers";
 import { createDocumentHandler } from "@/lib/artifacts/server";
+import { enforceFinanceAssistantText } from "@/lib/compliance/rules";
 
 export const textDocumentHandler = createDocumentHandler<"text">({
   kind: "text",
@@ -27,7 +28,8 @@ export const textDocumentHandler = createDocumentHandler<"text">({
       }
     }
 
-    return draftContent;
+    const complianceResult = enforceFinanceAssistantText(draftContent, title);
+    return complianceResult.text;
   },
   onUpdateDocument: async ({ document, description, dataStream, modelId }) => {
     let draftContent = "";
@@ -50,6 +52,10 @@ export const textDocumentHandler = createDocumentHandler<"text">({
       }
     }
 
-    return draftContent;
+    const complianceResult = enforceFinanceAssistantText(
+      draftContent,
+      description
+    );
+    return complianceResult.text;
   },
 });

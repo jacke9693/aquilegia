@@ -23,6 +23,8 @@ import {
   chat,
   type DBMessage,
   document,
+  financeApproval,
+  financeEligibilityProfile,
   message,
   type Suggestion,
   stream,
@@ -627,6 +629,152 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
     throw new ChatbotError(
       "bad_request:database",
       "Failed to get stream ids by chat id"
+    );
+  }
+}
+
+export async function getFinanceEligibilityProfileByUserId({
+  userId,
+}: {
+  userId: string;
+}) {
+  try {
+    const [profile] = await db
+      .select()
+      .from(financeEligibilityProfile)
+      .where(eq(financeEligibilityProfile.userId, userId));
+
+    return profile ?? null;
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to get finance eligibility profile"
+    );
+  }
+}
+
+export async function upsertFinanceEligibilityProfile({
+  userId,
+  age,
+  monthlyIncomeSek,
+  paymentRemarksCount,
+  activeKronofogdenDebt,
+  yearsInSweden,
+  purpose,
+}: {
+  userId: string;
+  age?: number;
+  monthlyIncomeSek?: number;
+  paymentRemarksCount?: number;
+  activeKronofogdenDebt?: boolean;
+  yearsInSweden?: number;
+  purpose?:
+    | "personal-loan"
+    | "business-loan"
+    | "investment"
+    | "savings"
+    | "pension";
+}) {
+  try {
+    await db
+      .insert(financeEligibilityProfile)
+      .values({
+        userId,
+        age,
+        monthlyIncomeSek,
+        paymentRemarksCount,
+        activeKronofogdenDebt,
+        yearsInSweden,
+        purpose,
+        updatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: financeEligibilityProfile.userId,
+        set: {
+          age,
+          monthlyIncomeSek,
+          paymentRemarksCount,
+          activeKronofogdenDebt,
+          yearsInSweden,
+          purpose,
+          updatedAt: new Date(),
+        },
+      });
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to upsert finance eligibility profile"
+    );
+  }
+}
+
+export async function getFinanceApprovalsByBrand({ brand }: { brand: string }) {
+  try {
+    return await db
+      .select()
+      .from(financeApproval)
+      .where(eq(financeApproval.brand, brand))
+      .orderBy(desc(financeApproval.updatedAt));
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to get finance approvals by brand"
+    );
+  }
+}
+
+export async function upsertFinanceApproval({
+  brand,
+  approvalType,
+  status,
+  notes,
+  approvedBy,
+}: {
+  brand: string;
+  approvalType: "channel" | "email" | "sms" | "content" | "manual" | "material";
+  status: "pending" | "approved" | "rejected" | "not-required";
+  notes?: string;
+  approvedBy?: string;
+}) {
+  try {
+    const [existing] = await db
+      .select()
+      .from(financeApproval)
+      .where(
+        and(
+          eq(financeApproval.brand, brand),
+          eq(financeApproval.approvalType, approvalType)
+        )
+      )
+      .limit(1);
+
+    if (existing) {
+      return await db
+        .update(financeApproval)
+        .set({
+          status,
+          notes,
+          approvedBy,
+          updatedAt: new Date(),
+        })
+        .where(eq(financeApproval.id, existing.id))
+        .returning();
+    }
+
+    return await db
+      .insert(financeApproval)
+      .values({
+        brand,
+        approvalType,
+        status,
+        notes,
+        approvedBy,
+      })
+      .returning();
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to upsert finance approval"
     );
   }
 }

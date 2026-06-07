@@ -1,4 +1,3 @@
-import type { Geo } from "@vercel/functions";
 import type { ArtifactKind } from "@/components/chat/artifact";
 
 export const artifactsPrompt = `
@@ -48,11 +47,38 @@ export const regularPrompt = `You are a helpful assistant. Keep responses concis
 
 When asked to write, create, or build something, do it immediately. Don't ask clarifying questions unless critical information is missing — make reasonable assumptions and proceed.`;
 
+export const financeCompliancePrompt = `
+You are operating in a Swedish financial affiliate chat context.
+
+Required behavior:
+- Use a moderate, neutral tone for all finance content.
+- Never provide investment advice or recommendations.
+- Never imply guaranteed returns, guaranteed approval, or effortless access to credit.
+- In loan context, do not use words like: snabbt, quick, quickly, enkelt, easy, easily, problemfritt, trouble-free, garanterat, guaranteed.
+- Do not state or imply cashback/coupon incentives for credit products.
+- Before presenting any specific finance brand offer, ensure eligibility fields are available: age, monthly income (SEK), payment remarks, active Kronofogden debt, years resident in Sweden, purpose.
+- If eligibility is missing, ask for the missing fields instead of offering brands.
+- Any recommendation/review style output with links must include sponsorship disclosure in Swedish:
+  "Lanken nedan ar en affiliatelank - vi kan fa ersattning om du ansoker."
+
+Loan-specific behavior:
+- Every specific loan offer must include a full representative example with APR/effective rate, term, and total repayment.
+- For high-cost credit products (APR above about 50%), include warning triangle text. Never omit this warning.
+- For Reducero wording, use "langivare" / "lenders" terminology and avoid "banks" terminology for comparison lenders.
+
+Investment-specific behavior:
+- Always include this risk warning:
+  "Historisk avkastning ar ingen garanti for framtida avkastning. Det finns en risk att du inte far tillbaka det kapital du investerade."
+- For Lysa content also include:
+  "Investeringar i vardepapper och fonder innebar alltid en risk. En investering kan bade oka och minska i varde och det ar inte sakert att du far tillbaka det investerade kapitalet."
+- For eToro in Nordic context, never mention or promote cryptocurrency.
+`;
+
 export type RequestHints = {
-  latitude: Geo["latitude"];
-  longitude: Geo["longitude"];
-  city: Geo["city"];
-  country: Geo["country"];
+  latitude?: string | null;
+  longitude?: string | null;
+  city?: string | null;
+  country?: string | null;
 };
 
 export const getRequestPromptFromHints = (requestHints: RequestHints) => `\
@@ -66,17 +92,22 @@ About the origin of user's request:
 export const systemPrompt = ({
   requestHints,
   supportsTools,
+  complianceContext,
 }: {
   requestHints: RequestHints;
   supportsTools: boolean;
+  complianceContext?: string;
 }) => {
   const requestPrompt = getRequestPromptFromHints(requestHints);
+  const complianceContextBlock = complianceContext
+    ? `\n\nCompliance context:\n${complianceContext}`
+    : "";
 
   if (!supportsTools) {
-    return `${regularPrompt}\n\n${requestPrompt}`;
+    return `${regularPrompt}\n\n${financeCompliancePrompt}${complianceContextBlock}\n\n${requestPrompt}`;
   }
 
-  return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
+  return `${regularPrompt}\n\n${financeCompliancePrompt}${complianceContextBlock}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
 };
 
 export const codePrompt = `

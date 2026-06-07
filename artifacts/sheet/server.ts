@@ -2,6 +2,7 @@ import { streamText } from "ai";
 import { sheetPrompt, updateDocumentPrompt } from "@/lib/ai/prompts";
 import { getLanguageModel } from "@/lib/ai/providers";
 import { createDocumentHandler } from "@/lib/artifacts/server";
+import { enforceFinanceAssistantText } from "@/lib/compliance/rules";
 
 export const sheetDocumentHandler = createDocumentHandler<"sheet">({
   kind: "sheet",
@@ -25,7 +26,8 @@ export const sheetDocumentHandler = createDocumentHandler<"sheet">({
       }
     }
 
-    return draftContent;
+    const complianceResult = enforceFinanceAssistantText(draftContent, title);
+    return complianceResult.text;
   },
   onUpdateDocument: async ({ document, description, dataStream, modelId }) => {
     let draftContent = "";
@@ -47,6 +49,10 @@ export const sheetDocumentHandler = createDocumentHandler<"sheet">({
       }
     }
 
-    return draftContent;
+    const complianceResult = enforceFinanceAssistantText(
+      draftContent,
+      description
+    );
+    return complianceResult.text;
   },
 });

@@ -13,6 +13,46 @@ export const messageMetadataSchema = z.object({
 
 export type MessageMetadata = z.infer<typeof messageMetadataSchema>;
 
+export const eligibilityPurposeSchema = z.enum([
+  "personal-loan",
+  "business-loan",
+  "investment",
+  "savings",
+  "pension",
+]);
+
+export const userEligibilityProfileSchema = z.object({
+  age: z.number().int().min(18),
+  monthlyIncomeSek: z.number().int().nonnegative(),
+  paymentRemarks: z.union([z.literal("no"), z.literal("yes"), z.number().int().min(0)]),
+  activeKronofogdenDebt: z.boolean(),
+  yearsInSweden: z.number().min(0),
+  purpose: eligibilityPurposeSchema,
+});
+
+export const complianceSeveritySchema = z.enum(["warning", "block"]);
+
+export const complianceViolationSchema = z.object({
+  code: z.string(),
+  severity: complianceSeveritySchema,
+  messageSv: z.string(),
+  messageEn: z.string(),
+  source: z.enum(["eligibility", "phrase", "investment", "disclosure", "brand-rule"]),
+});
+
+export const complianceCardSchema = z.object({
+  titleSv: z.string(),
+  titleEn: z.string(),
+  bodySv: z.string(),
+  bodyEn: z.string(),
+  kind: z.enum(["warning", "disclosure", "risk", "eligibility"]),
+  brand: z.string().optional(),
+});
+
+export type UserEligibilityProfile = z.infer<typeof userEligibilityProfileSchema>;
+export type ComplianceViolation = z.infer<typeof complianceViolationSchema>;
+export type ComplianceCard = z.infer<typeof complianceCardSchema>;
+
 type weatherTool = InferUITool<typeof getWeather>;
 type createDocumentTool = InferUITool<ReturnType<typeof createDocument>>;
 type updateDocumentTool = InferUITool<ReturnType<typeof updateDocument>>;
@@ -40,6 +80,8 @@ export type CustomUIDataTypes = {
   clear: null;
   finish: null;
   "chat-title": string;
+  complianceCard: ComplianceCard;
+  complianceViolation: ComplianceViolation;
 };
 
 export type ChatMessage = UIMessage<
