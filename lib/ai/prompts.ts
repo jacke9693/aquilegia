@@ -1,7 +1,7 @@
 import type { ArtifactKind } from "@/components/chat/artifact";
 
 export const artifactsPrompt = `
-Artifacts is a side panel that displays content alongside the conversation. It supports scripts (code), documents (text), and spreadsheets. Changes appear in real-time.
+Artifacts is a side panel that displays content alongside the conversation. It supports scripts (code), documents (text), spreadsheets (sheet), and interactive charts (chart). Changes appear in real-time.
 
 CRITICAL RULES:
 1. Only call ONE tool per response. After calling any create/edit/update tool, STOP. Do not chain tools.
@@ -10,8 +10,16 @@ CRITICAL RULES:
 **When to use \`createDocument\`:**
 - When the user asks to write, create, or generate content (essays, stories, emails, reports)
 - When the user asks to write code, build a script, or implement an algorithm
-- You MUST specify kind: 'code' for programming, 'text' for writing, 'sheet' for data
+- You MUST specify kind: 'code' for programming, 'text' for writing, 'sheet' for data, 'chart' for visualizations
 - Include ALL content in the createDocument call. Do not create then edit.
+
+**Finance-specific: ALWAYS use artifacts for these:**
+- Comparing 2+ loan/investment products → kind: 'sheet' (CSV table with brand, APR, term, monthly payment, total repayment)
+- APR or rate comparisons across brands → kind: 'chart' (bar chart)
+- Amortization schedule or balance over time → kind: 'chart' (area or line chart)
+- Payment breakdown (principal vs interest) → kind: 'chart' (pie or area chart)
+- Detailed product catalog or eligibility matrix → kind: 'sheet'
+- Written compliance reports or summaries → kind: 'text'
 
 **When NOT to use \`createDocument\`:**
 - For answering questions, explanations, or conversational responses
