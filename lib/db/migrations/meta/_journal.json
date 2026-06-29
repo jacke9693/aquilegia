@@ -8,6 +8,13 @@
       "when": 1710000000000,
       "tag": "0000_initial",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1782766610766,
+      "tag": "0001_round_gorilla_man",
+      "breakpoints": true
     }
   ]
 }
