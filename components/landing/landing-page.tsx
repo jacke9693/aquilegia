@@ -70,7 +70,7 @@ export function LandingPage() {
       {/* Nav */}
       <nav className="sticky top-0 z-10 flex items-center justify-between border-b border-border/50 bg-background/80 px-6 py-3 backdrop-blur-md">
         <span className="font-semibold text-base tracking-tight">
-          Finansassistenten
+          AquiLegia
         </span>
         <div className="flex items-center gap-2">
           <ThemeToggle />
@@ -102,7 +102,7 @@ export function LandingPage() {
             <span className="text-primary">med AI</span>
           </h1>
           <p className="mx-auto mb-8 max-w-xl text-base text-muted-foreground leading-relaxed">
-            Finansassistenten matchar dig med reglerade svenska finansprodukter —
+            AquiLegia matchar dig med reglerade svenska finansprodukter —
             med inbyggd compliance, fullständiga disclosures och inga dolda
             intressen.
           </p>
@@ -245,7 +245,7 @@ export function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-border/40 bg-muted/20 px-6 py-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
-          <span className="text-sm font-semibold">Finansassistenten</span>
+          <span className="text-sm font-semibold">AquiLegia</span>
           <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-[12px] text-muted-foreground">
             <Link className="hover:text-foreground" href="/om">
               Om tjänsten

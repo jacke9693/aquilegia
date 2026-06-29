@@ -10,7 +10,7 @@ export default function MarketingLayout({
     <div className="min-h-dvh bg-background">
       <nav className="sticky top-0 z-10 flex items-center justify-between border-b border-border/50 bg-background/80 px-6 py-3 backdrop-blur-md">
         <Link className="font-semibold text-base tracking-tight" href="/">
-          Finansassistenten
+          AquiLegia
         </Link>
         <div className="flex items-center gap-2">
           <Link
@@ -40,7 +40,7 @@ export default function MarketingLayout({
       <footer className="border-t border-border/40 bg-muted/20 px-6 py-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 text-center sm:flex-row sm:justify-between">
           <Link className="text-sm font-semibold" href="/">
-            Finansassistenten
+            AquiLegia
           </Link>
           <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-[12px] text-muted-foreground">
             <Link className="hover:text-foreground" href="/om">

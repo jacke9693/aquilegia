@@ -11,24 +11,42 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_BASE_URL ?? "https://localhost:3000"
   ),
   title: {
-    default: "Finansassistenten — Hitta rätt lån & investering i Sverige",
-    template: "%s | Finansassistenten",
+    default: "AquiLegia — Jämför lån & investeringar i Sverige",
+    template: "%s | AquiLegia",
   },
   description:
-    "AI-driven finansrådgivningstjänst för Sverige. Jämför privatlan, foretagslan, investeringar och sparkonton — med inbyggd compliance och fullständiga disclosures.",
+    "AI-driven jämförelsetjänst för svenska finansprodukter. Jämför privatlån, företagslån, investeringar och sparkonton — med inbyggd compliance och fullständiga disclosures.",
   keywords: [
-    "privatlan",
-    "foretagslan",
+    "privatlån",
+    "företagslån",
     "investering",
     "sparkonto",
-    "affiliate",
+    "jämförelsetjänst",
     "Sverige",
     "finans",
+    "lån",
+    "Lendo",
+    "Lysa",
+    "Avanza",
+    "AquiLegia",
   ],
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
     type: "website",
     locale: "sv_SE",
-    siteName: "Finansassistenten",
+    siteName: "AquiLegia",
+    title: "AquiLegia — Jämför lån & investeringar i Sverige",
+    description:
+      "AI-driven jämförelsetjänst för svenska finansprodukter med inbyggd compliance och fullständiga disclosures.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AquiLegia — Jämför lån & investeringar i Sverige",
+    description:
+      "AI-driven jämförelsetjänst för svenska finansprodukter med inbyggd compliance.",
   },
 };
 
@@ -76,7 +94,7 @@ export default function RootLayout({
   return (
     <html
       className={`${geist.variable} ${geistMono.variable}`}
-      lang="en"
+      lang="sv"
       suppressHydrationWarning
     >
       <head>

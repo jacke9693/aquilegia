@@ -273,7 +273,27 @@ export const chartArtifact = new Artifact<"chart", Metadata>({
 
     let spec: ChartSpec | null = null;
     try {
-      spec = JSON.parse(content) as ChartSpec;
+      // Strip markdown code fences the AI sometimes adds despite instructions
+      const cleaned = content
+        .replace(/^```(?:json)?\s*/i, "")
+        .replace(/\s*```\s*$/, "")
+        .trim();
+      spec = JSON.parse(cleaned) as ChartSpec;
+
+      // Coerce any string numbers in data to actual numbers so Recharts renders them
+      if (spec.data) {
+        spec.data = spec.data.map((row) => {
+          const normalized: Record<string, string | number> = {};
+          for (const [k, v] of Object.entries(row)) {
+            if (typeof v === "string" && v.trim() !== "" && !Number.isNaN(Number(v))) {
+              normalized[k] = Number(v);
+            } else {
+              normalized[k] = v;
+            }
+          }
+          return normalized;
+        });
+      }
     } catch {
       return (
         <div className="flex h-[300px] items-center justify-center">
