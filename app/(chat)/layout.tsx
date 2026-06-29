@@ -27,6 +27,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 async function SidebarShell({ children }: { children: React.ReactNode }) {
   const [session, cookieStore] = await Promise.all([auth(), cookies()]);
+
+  if (!session?.user) {
+    return <>{children}</>;
+  }
+
   const isCollapsed = cookieStore.get("sidebar_state")?.value !== "true";
 
   return (

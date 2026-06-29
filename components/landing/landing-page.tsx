@@ -66,7 +66,7 @@ const FAQ = [
 
 export function LandingPage() {
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-background">
+    <div className="min-h-dvh bg-background">
       {/* Nav */}
       <nav className="sticky top-0 z-10 flex items-center justify-between border-b border-border/50 bg-background/80 px-6 py-3 backdrop-blur-md">
         <span className="font-semibold text-base tracking-tight">
