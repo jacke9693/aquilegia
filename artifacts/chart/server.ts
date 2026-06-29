@@ -19,14 +19,14 @@ Schema:
 }
 
 Finance chart guidelines:
-- APR/loan comparisons → chartType "bar", xKey "varumarke", one yKey "apr" (number, percent)
-- Monthly payment schedules → chartType "area", xKey "manad", yKeys "kapital" + "ranta"
-- Amortization/balance over time → chartType "line", xKey "manad", yKey "aterstående"
+- APR/loan comparisons → chartType "bar", xKey "varumärke", one yKey "apr" (number, percent)
+- Monthly payment schedules → chartType "area", xKey "månad", yKeys "kapital" + "ränta"
+- Amortization/balance over time → chartType "line", xKey "månad", yKey "återstående"
 - Payment composition → chartType "pie", xKey "kategori", yKey "belopp"
 - Use Swedish labels for xKey values and yKey labels
 - Always add a disclaimer for loan/investment charts:
-  - Loans: "Representativa exempel. Faktisk ranta beror pa kreditbedömning."
-  - Investment: "Historisk avkastning ar ingen garanti for framtida avkastning."
+  - Loans: "Representativa exempel. Faktisk ränta beror på kreditbedömning."
+  - Investment: "Historisk avkastning är ingen garanti för framtida avkastning."
 - Max 12 data points
 - APR values as plain numbers (e.g. 11.36 not "11.36%")
 - Monetary values as plain integers in SEK`;

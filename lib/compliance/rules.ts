@@ -160,12 +160,12 @@ export function formatMissingEligibilityFields(
         };
       case "monthlyIncomeSek":
         return {
-          sv: "manadsinkomst (SEK)",
+          sv: "månadsinkomst (SEK)",
           en: "monthly income (SEK)",
         };
       case "paymentRemarks":
         return {
-          sv: "betalningsanmarkningar",
+          sv: "betalningsanmärkningar",
           en: "payment remarks",
         };
       case "activeKronofogdenDebt":
@@ -175,7 +175,7 @@ export function formatMissingEligibilityFields(
         };
       case "yearsInSweden":
         return {
-          sv: "antal ar i Sverige",
+          sv: "antal år i Sverige",
           en: "years resident in Sweden",
         };
       case "purpose":
@@ -323,14 +323,14 @@ function buildMandatoryDisclosures(content: string): string[] {
 
     if (rule.requiresBrokerDisclosure) {
       const brokerDisclosureSv =
-        "Tjansten ar en jamforelsetjanst/formedlare och inte en direkt langivare. En kreditupplysning kan delas med flera langivare.";
+        "Tjänsten är en jämförelsetjänst/förmedlare och inte en direkt långivare. En kreditupplysning kan delas med flera långivare.";
       if (!normalized.includes(normalizeText(brokerDisclosureSv))) {
         disclosures.push(brokerDisclosureSv);
       }
     }
 
     if (rule.requiresSponsoredLinkLabel) {
-      const lysaSponsoredMarker = "(sponsrad lank)";
+      const lysaSponsoredMarker = "(sponsrad länk)";
       if (!normalized.includes(lysaSponsoredMarker)) {
         disclosures.push(lysaSponsoredMarker);
       }
@@ -358,7 +358,7 @@ export function enforceFinanceAssistantText(
           {
             code: "missing_eligibility_profile",
             severity: "block",
-            messageSv: "Behorighetsuppgifter saknas innan varumarkeserbjudanden kan visas.",
+            messageSv: "Behörighetsuppgifter saknas innan varumärkeserbjudanden kan visas.",
             messageEn:
               "Eligibility details are missing before brand offers can be shown.",
             source: "eligibility",
@@ -367,7 +367,7 @@ export function enforceFinanceAssistantText(
         blocked: true,
         injectedDisclosures: [],
         text:
-          "Innan jag visar ett specifikt finansvarumarke maste jag samla in: alder, manadsinkomst (SEK), betalningsanmarkningar, aktiv skuld hos Kronofogden, antal ar i Sverige och syfte (privatlan/foretagslan/investering/sparande/pension).\n\nBefore I can show a specific finance brand, I need: age, monthly income (SEK), payment remarks, active Kronofogden debt, years resident in Sweden, and purpose (personal loan/business loan/investment/savings/pension).",
+          "Innan jag visar ett specifikt finansvarumärke måste jag samla in: ålder, månadsinkomst (SEK), betalningsanmärkningar, aktiv skuld hos Kronofogden, antal år i Sverige och syfte (privatlån/företagslån/investering/sparande/pension).\n\nBefore I can show a specific finance brand, I need: age, monthly income (SEK), payment remarks, active Kronofogden debt, years resident in Sweden, and purpose (personal loan/business loan/investment/savings/pension).",
       };
     }
   }
@@ -382,7 +382,7 @@ export function enforceFinanceAssistantText(
       code: "reducero_lender_wording",
       severity: "block",
       messageSv:
-        "For Reducero ska termen langivare anvandas, inte banker.",
+        "För Reducero ska termen långivare användas, inte banker.",
       messageEn:
         "For Reducero, use lenders terminology instead of banks.",
       source: "brand-rule",

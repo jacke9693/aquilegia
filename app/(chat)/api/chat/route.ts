@@ -296,7 +296,7 @@ export async function POST(request: Request) {
               data: {
                 titleSv: "Behorighetsuppgifter kravs",
                 titleEn: "Eligibility details required",
-                bodySv: `Fyll i innan varumarkeserbjudanden visas: ${labels.sv}`,
+                bodySv: `Fyll i innan varumärkeserbjudanden visas: ${labels.sv}`,
                 bodyEn: `Provide before brand offers can be shown: ${labels.en}`,
                 kind: "eligibility",
                 brand: mentionedBrands[0]?.brand,

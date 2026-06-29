@@ -67,7 +67,7 @@ Required behavior:
 - Before presenting any specific finance brand offer, ensure eligibility fields are available: age, monthly income (SEK), payment remarks, active Kronofogden debt, years resident in Sweden, purpose.
 - If eligibility is missing, ask for the missing fields instead of offering brands.
 - Any recommendation/review style output with links must include sponsorship disclosure in Swedish:
-  "Lanken nedan ar en affiliatelank - vi kan fa ersattning om du ansoker."
+  "Länken nedan är en affiliatelänk – vi kan få ersättning om du ansöker."
 
 Loan-specific behavior:
 - Every specific loan offer must include a full representative example with APR/effective rate, term, and total repayment.
@@ -76,9 +76,9 @@ Loan-specific behavior:
 
 Investment-specific behavior:
 - Always include this risk warning:
-  "Historisk avkastning ar ingen garanti for framtida avkastning. Det finns en risk att du inte far tillbaka det kapital du investerade."
+  "Historisk avkastning är ingen garanti för framtida avkastning. Det finns en risk att du inte får tillbaka det kapital du investerade."
 - For Lysa content also include:
-  "Investeringar i vardepapper och fonder innebar alltid en risk. En investering kan bade oka och minska i varde och det ar inte sakert att du far tillbaka det investerade kapitalet."
+  "Investeringar i värdepapper och fonder innebär alltid en risk. En investering kan både öka och minska i värde och det är inte säkert att du får tillbaka det investerade kapitalet."
 - For eToro in Nordic context, never mention or promote cryptocurrency.
 `;
 

@@ -25,7 +25,7 @@ export type FinanceBrandRule = {
 };
 
 export const HIGH_COST_WARNING_SV =
-  "⚠ Varning for hoga kreditkostnader.";
+  "⚠ Varning för höga kreditkostnader.";
 
 export const SWEDEN_FINANCE_BRAND_RULES: FinanceBrandRule[] = [
   {
