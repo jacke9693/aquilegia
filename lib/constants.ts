@@ -42,17 +42,17 @@ export const FINANCE_PURPOSES = [
 export const FINANCE_HIGH_COST_APR_THRESHOLD = 50;
 
 export const FINANCE_AFFILIATE_DISCLOSURE_SV =
-  "Lanken nedan ar en affiliatelank - vi kan fa ersattning om du ansoker.";
+  "Länken nedan är en affiliatelänk – vi kan få ersättning om du ansöker.";
 export const FINANCE_AFFILIATE_DISCLOSURE_EN =
   "The link below is an affiliate link - we may receive compensation if you apply.";
 
 export const FINANCE_INVESTMENT_WARNING_SV =
-  "Historisk avkastning ar ingen garanti for framtida avkastning. Det finns en risk att du inte far tillbaka det kapital du investerade.";
+  "Historisk avkastning är ingen garanti för framtida avkastning. Det finns en risk att du inte får tillbaka det kapital du investerade.";
 export const FINANCE_INVESTMENT_WARNING_EN =
   "Historical returns are no guarantee of future returns. There is a risk that you may not get back the money you invested.";
 
 export const FINANCE_LYSA_WARNING_SV =
-  "Investeringar i vardepapper och fonder innebar alltid en risk. En investering kan bade oka och minska i varde och det ar inte sakert att du far tillbaka det investerade kapitalet.";
+  "Investeringar i värdepapper och fonder innebär alltid en risk. En investering kan både öka och minska i värde och det är inte säkert att du får tillbaka det investerade kapitalet.";
 
 export const FINANCE_LOAN_STOP_WORDS = [
   "snabbt",
