@@ -13,10 +13,10 @@ export const guestRegex = /^guest-\d+$/;
 export const DUMMY_PASSWORD = generateDummyPassword();
 
 export const suggestions = [
-  "Jag vill jamfora privatlan i Sverige. Jag ar 31, inkomst 38000 SEK/man, inga betalningsanmarkningar, ingen Kronofogden-skuld, 8 ar i Sverige.",
-  "Visa investeringstjanster (inte radgivning) och inkludera alla riskvarningar. Jag bor i Sverige sedan 5 ar.",
-  "Jag sokar foretagslan for registrerat bolag. Vilka krav finns pa borgensman och kreditupplysning?",
-  "Hjalp mig fylla i behorighetsuppgifter steg for steg: alder, inkomst, anmarkningar, Kronofogden, boendetid, syfte.",
+  "Jag vill jämföra privatlån i Sverige. Jag är 31 år, inkomst 38 000 SEK/mån, inga betalningsanmärkningar, ingen Kronofogden-skuld, bott i Sverige 8 år.",
+  "Visa investeringstjänster (ej rådgivning) och inkludera alla riskvarningar. Jag bor i Sverige sedan 5 år.",
+  "Jag söker företagslån för registrerat bolag. Vilka krav ställs på borgensman och kreditupplysning?",
+  "Hjälp mig fylla i behörighetsuppgifter steg för steg: ålder, inkomst, anmärkningar, Kronofogden, boendetid, syfte.",
 ];
 
 export const FINANCE_DEFAULT_LOCALE = "sv-SE";

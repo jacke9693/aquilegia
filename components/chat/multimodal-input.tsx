@@ -70,13 +70,13 @@ function setCookie(name: string, value: string) {
 
 function buildEligibilityTemplate() {
   return [
-    "Please use this eligibility profile for Sweden finance offers:",
-    "age:",
-    "monthlyIncomeSek:",
-    "paymentRemarks: no/yes/<count>",
-    "activeKronofogdenDebt: no/yes",
-    "yearsInSweden:",
-    "purpose: personal-loan/business-loan/investment/savings/pension",
+    "Använd dessa behörighetsuppgifter för svenska finanserbjudanden:",
+    "ålder:",
+    "månadsinkomstSek:",
+    "betalningsanmärkningar: nej/ja/<antal>",
+    "aktivKronofogdenskuld: nej/ja",
+    "årISverige:",
+    "syfte: privatlån/företagslån/investering/sparande/pension",
   ].join("\n");
 }
 
@@ -445,10 +445,10 @@ function PureMultimodalInput({
             className="rounded-xl border border-amber-300/60 bg-amber-50/80 px-3 py-2 text-[12px] text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-100"
             data-testid="eligibility-helper"
           >
-            <div className="font-medium">Eligibility details needed</div>
+            <div className="font-medium">Behörighetsuppgifter saknas</div>
             <div className="mt-0.5">
               {complianceSummary?.missingFieldsLabels?.sv ??
-                "Fyll i behorighetsuppgifter innan finansvarumarken visas."}
+                "Fyll i behörighetsuppgifter innan finansvarumärken visas."}
             </div>
             <div className="mt-2">
               <button
@@ -459,7 +459,7 @@ function PureMultimodalInput({
                 }}
                 type="button"
               >
-                Insert eligibility template
+                Fyll i mall för behörighetsuppgifter
               </button>
             </div>
           </div>
