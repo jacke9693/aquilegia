@@ -1,13 +1,8 @@
-import type { UserType } from "@/app/(auth)/auth";
-
 type Entitlements = {
   maxMessagesPerHour: number;
 };
 
-export const entitlementsByUserType: Record<UserType, Entitlements> = {
-  guest: {
-    maxMessagesPerHour: 10,
-  },
+export const entitlementsByUserType: Record<string, Entitlements> = {
   regular: {
     maxMessagesPerHour: 10,
   },
