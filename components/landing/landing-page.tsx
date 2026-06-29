@@ -197,6 +197,9 @@ export function LandingPage() {
             <Link className="hover:text-foreground" href="/ansvarsfriskrivning">
               Ansvarsfriskrivning
             </Link>
+            <Link className="hover:text-foreground" href="/anvandarvillkor">
+              Användarvillkor
+            </Link>
             <Link className="hover:text-foreground" href="/login">
               Logga in
             </Link>

@@ -41,6 +41,9 @@ export default function MarketingLayout({
             <Link className="hover:text-foreground" href="/ansvarsfriskrivning">
               Ansvarsfriskrivning
             </Link>
+            <Link className="hover:text-foreground" href="/anvandarvillkor">
+              Användarvillkor
+            </Link>
           </div>
           <p className="text-[11px] text-muted-foreground/50">
             Jämförelsetjänst · Inte finansiell rådgivning
