@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ThemeToggle } from "@/components/landing/theme-toggle";
 
 export default function MarketingLayout({
   children,
@@ -11,7 +12,14 @@ export default function MarketingLayout({
         <Link className="font-semibold text-base tracking-tight" href="/">
           Finansassistenten
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <Link
+            className="rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            href="/om"
+          >
+            Om
+          </Link>
+          <ThemeToggle />
           <Link
             className="rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
             href="/login"
@@ -35,6 +43,9 @@ export default function MarketingLayout({
             Finansassistenten
           </Link>
           <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-[12px] text-muted-foreground">
+            <Link className="hover:text-foreground" href="/om">
+              Om tjänsten
+            </Link>
             <Link className="hover:text-foreground" href="/integritetspolicy">
               Integritetspolicy
             </Link>

@@ -1,7 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowRight, CheckCircle, Shield, Sparkles, Zap } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
 
 const FEATURES = [
   {
@@ -28,7 +27,41 @@ const STEPS = [
 ];
 
 const BRANDS = [
-  "Lendo", "Lysa", "Avanza", "Sambla", "Zmarta", "Northmill", "Klarna", "Swedbank",
+  "Lendo",
+  "Lysa",
+  "Avanza",
+  "Sambla",
+  "Zmarta",
+  "Northmill",
+  "Klarna",
+  "Swedbank",
+];
+
+const FAQ = [
+  {
+    q: "Kostar det något att använda Finansassistenten?",
+    a: "Nej, tjänsten är helt gratis för dig som användare. Vi finansieras via affiliateersättning när du väljer att ansöka om en produkt via en av våra länkade aktörer.",
+  },
+  {
+    q: "Är detta finansiell rådgivning?",
+    a: "Nej. Finansassistenten är en jämförelsetjänst och inte en licensierad finansiell rådgivare. AI-svaren är informativa och compliance-kontrollerade, men du bör alltid verifiera villkor direkt hos respektive aktör innan du fattar ett beslut.",
+  },
+  {
+    q: "Vad är en betalningsanmärkning och varför frågar ni om det?",
+    a: "En betalningsanmärkning registreras hos Kronofogden eller ett kreditupplysningsföretag när du inte betalat en skuld i tid. Många långivare nekar ansökningar vid betalningsanmärkningar — vi frågar för att bara visa produkter du faktiskt kan beviljas.",
+  },
+  {
+    q: "Hur hanteras mina uppgifter?",
+    a: "Dina behörighetsuppgifter (lder, inkomst m.m.) sparas krypterat och används enbart för att filtrera finansprodukter. Vi delar aldrig dina personuppgifter med finansföretagen. Läs mer i vår Integritetspolicy.",
+  },
+  {
+    q: "Varför ser jag 'ANNONS' på vissa kort?",
+    a: "Produktkort märkta ANNONS är affiliateannonser — vi kan erhålla ersättning om du klickar och ansöker. Kravet kommer från ICC:s regler och Konsumentverkets riktlinjer om tydlig märkning av kommersiellt innehåll.",
+  },
+  {
+    q: "Kan jag använda tjänsten utan att registrera mig?",
+    a: "Du behöver ett konto för att spara din behörighetsprofil och chatthistorik. Registrering är gratis och tar under en minut.",
+  },
 ];
 
 export function LandingPage() {
@@ -39,7 +72,8 @@ export function LandingPage() {
         <span className="font-semibold text-base tracking-tight">
           Finansassistenten
         </span>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Link
             className="rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
             href="/login"
@@ -155,6 +189,28 @@ export function LandingPage() {
           </div>
         </section>
 
+        {/* FAQ */}
+        <section className="mx-auto max-w-3xl px-6 py-20">
+          <h2 className="mb-8 text-center text-2xl font-bold tracking-tight">
+            Vanliga frågor
+          </h2>
+          <div className="divide-y divide-border/50">
+            {FAQ.map(({ q, a }) => (
+              <details className="group py-4" key={q}>
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-medium marker:hidden">
+                  {q}
+                  <span className="shrink-0 text-muted-foreground transition-transform group-open:rotate-180">
+                    ▾
+                  </span>
+                </summary>
+                <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                  {a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+
         {/* Trust + CTA */}
         <section className="mx-auto max-w-3xl px-6 py-20 text-center">
           <h2 className="mb-4 text-2xl font-bold tracking-tight">
@@ -191,6 +247,9 @@ export function LandingPage() {
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
           <span className="text-sm font-semibold">Finansassistenten</span>
           <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-[12px] text-muted-foreground">
+            <Link className="hover:text-foreground" href="/om">
+              Om tjänsten
+            </Link>
             <Link className="hover:text-foreground" href="/integritetspolicy">
               Integritetspolicy
             </Link>
