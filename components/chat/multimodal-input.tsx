@@ -60,6 +60,7 @@ import {
   slashCommands,
 } from "./slash-commands";
 import { SuggestedActions } from "./suggested-actions";
+import { EligibilityForm } from "./eligibility-form";
 import type { VisibilityType } from "./visibility-selector";
 
 function setCookie(name: string, value: string) {
@@ -234,6 +235,7 @@ function PureMultimodalInput({
   const [slashOpen, setSlashOpen] = useState(false);
   const [slashQuery, setSlashQuery] = useState("");
   const [slashIndex, setSlashIndex] = useState(0);
+  const [showEligibilityForm, setShowEligibilityForm] = useState(false);
 
   const submitForm = useCallback(() => {
     window.history.pushState(
@@ -441,28 +443,43 @@ function PureMultimodalInput({
       {!editingMessage &&
         complianceSummary?.eligibilityComplete === false &&
         messages.length === 0 && (
-          <div
-            className="rounded-xl border border-amber-300/60 bg-amber-50/80 px-3 py-2 text-[12px] text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-100"
-            data-testid="eligibility-helper"
-          >
-            <div className="font-medium">Behörighetsuppgifter saknas</div>
-            <div className="mt-0.5">
-              {complianceSummary?.missingFieldsLabels?.sv ??
-                "Fyll i behörighetsuppgifter innan finansvarumärken visas."}
+          showEligibilityForm ? (
+            <EligibilityForm
+              onClose={() => setShowEligibilityForm(false)}
+              onSubmit={(message) => {
+                window.history.pushState(
+                  {},
+                  "",
+                  `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/chat/${chatId}`
+                );
+                sendMessage({
+                  role: "user",
+                  parts: [{ type: "text", text: message }],
+                });
+                setShowEligibilityForm(false);
+              }}
+            />
+          ) : (
+            <div
+              className="rounded-xl border border-amber-300/60 bg-amber-50/80 px-3 py-2 text-[12px] text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-100"
+              data-testid="eligibility-helper"
+            >
+              <div className="font-medium">Behörighetsuppgifter saknas</div>
+              <div className="mt-0.5">
+                {complianceSummary?.missingFieldsLabels?.sv ??
+                  "Fyll i behörighetsuppgifter innan finansvarumärken visas."}
+              </div>
+              <div className="mt-2">
+                <button
+                  className="rounded-md border border-amber-500/50 bg-white/60 px-2.5 py-1 text-[11px] hover:bg-white dark:bg-amber-900/20 dark:hover:bg-amber-900/40"
+                  onClick={() => setShowEligibilityForm(true)}
+                  type="button"
+                >
+                  Fyll i formulär
+                </button>
+              </div>
             </div>
-            <div className="mt-2">
-              <button
-                className="rounded-md border border-amber-500/50 bg-white/60 px-2.5 py-1 text-[11px] hover:bg-white dark:bg-amber-900/20 dark:hover:bg-amber-900/40"
-                onClick={() => {
-                  setInput(buildEligibilityTemplate());
-                  textareaRef.current?.focus();
-                }}
-                type="button"
-              >
-                Fyll i mall för behörighetsuppgifter
-              </button>
-            </div>
-          </div>
+          )
         )}
 
       <PromptInput
