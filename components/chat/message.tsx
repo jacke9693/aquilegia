@@ -1,7 +1,8 @@
 "use client";
+import useSWR from "swr";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import type { Vote } from "@/lib/db/schema";
-import type { ChatMessage } from "@/lib/types";
+import type { ChatMessage, UserEligibilityProfile } from "@/lib/types";
 import { cn, sanitizeText } from "@/lib/utils";
 import { MessageContent, MessageResponse } from "../ai-elements/message";
 import { Shimmer } from "../ai-elements/shimmer";
@@ -49,6 +50,10 @@ const PurePreviewMessage = ({
   const attachmentsFromMessage = message.parts.filter(
     (part) => part.type === "file"
   );
+
+  const { data: eligibilityData } = useSWR<{
+    profile: UserEligibilityProfile | null;
+  }>("/api/compliance/eligibility");
 
   useDataStream();
 
@@ -342,6 +347,7 @@ const PurePreviewMessage = ({
             brand={part.output as FinanceBrandRule}
             className="w-[min(100%,420px)]"
             key={toolCallId}
+            profile={eligibilityData?.profile ?? undefined}
           />
         );
       }
